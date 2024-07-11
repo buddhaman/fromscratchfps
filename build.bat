@@ -1,5 +1,9 @@
 @echo off
 
+if not exist build (
+    mkdir build
+)
+
 pushd build
 
 rem Client debug 
