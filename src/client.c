@@ -24,6 +24,7 @@ typedef double R64;
 
 #define ArraySize(array) (sizeof(arr) / sizeof(array[0]))
 
+
 inline R32 RandomR32(R32 min, R32 max) 
 {
     R32 scale = rand() / (R32) RAND_MAX; 
@@ -40,11 +41,18 @@ inline U32 CreateColor(U8 r, U8 g, U8 b, U8 a)
     return ((U32)a << 24) | ((U32)r << 16) | ((U32)g << 8) | (U32)b;
 }
 
+// My files
+
+#include "letters.h"
+
 // Global variables
 HINSTANCE app_instance;
 char title[] = "FPS";
 char window_class[] = "FPSWindowClass";
 U32 pixel_buffer[WIDTH * HEIGHT];
+
+const I32 CHAR_WIDTH = 12;
+const I32 CHAR_HEIGHT = 16;
 
 // Function prototypes if needed.
 void DrawBuffer(HDC hdc);
@@ -184,7 +192,6 @@ void FillTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
 
 void TestTriangle(I32 x, I32 y, R32 angle, U32 color)
 {
-    // Animate triangle vertices
     R32 l = 10;
     I32 x0 = x + (I32)(l * sinf(angle));
     I32 y0 = y + (I32)(l * cosf(angle));
@@ -192,7 +199,55 @@ void TestTriangle(I32 x, I32 y, R32 angle, U32 color)
     I32 y1 = y + (I32)(l * cosf(angle + 2.0f * 3.14f / 3.0f));
     I32 x2 = x + (I32)(l * sinf(angle + 4.0f * 3.14f / 3.0f));
     I32 y2 = y + (I32)(l * cosf(angle + 4.0f * 3.14f / 3.0f));
-    FillTriangle(x0, y0, x1, y1, x2, y2, color);  // Green triangle
+    FillTriangle(x0, y0, x1, y1, x2, y2, color);  
+}
+
+void BlitCharacter(I32 x, I32 y, char c, U32 color)
+{
+    const I32 BYTES_PER_ROW = (CHAR_WIDTH + 7) / 8; 
+
+    I32 bitmap_offset = c * CHAR_HEIGHT * BYTES_PER_ROW;
+
+    for(I32 yy = 0; yy < CHAR_HEIGHT; yy++) 
+    for(I32 xx = 0; xx < CHAR_WIDTH; xx++) 
+    {
+        int byte_idx = bitmap_offset + yy * BYTES_PER_ROW + (xx / 8);
+        int bit_idx = xx % 8;
+
+        U8 val = (console_font_12x16[byte_idx] >> (7 - bit_idx)) & 1;
+
+        if(val) 
+        {
+            SetPixelColor(x + xx, y + yy, color);
+        }
+    }
+}
+
+void BlitText(const char* text, I32 start_x, I32 start_y, U32 color)
+{
+    I32 x = start_x;
+    I32 y = start_y;
+    const I32 CHAR_WIDTH = 12;
+    const I32 CHAR_HEIGHT = 16;
+
+    while (*text) 
+    {
+        if (*text == '\n') 
+        {
+            x = start_x;
+            y += CHAR_HEIGHT;
+        } 
+        else 
+        {
+            BlitCharacter(x, y, *text, color);
+            x += CHAR_WIDTH;
+            if (x + CHAR_WIDTH > WIDTH) {
+                x = start_x;
+                y += CHAR_HEIGHT;
+            }
+        }
+        text++;
+    }
 }
 
 I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmdshow) 
@@ -266,12 +321,21 @@ I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdli
         // Clear buffer
         ClearBuffer();
 
-        // Draw a triangle
-        for(I32 i = 0; i < N_TRIANGLES; i++)
+#if 1
+        // Triangle stress test
+        for(I32 i = 0; i < 124; i++)
         {
             U32 color = RandomU32(0, UINT32_MAX);
             TestTriangle(x[i], y[i], i+t, c[i]);
         }
+#endif
+
+        BlitCharacter(20, 20, 'X', 0xffffffff);
+        BlitCharacter(60, 20, 'A', 0xffffffff);
+        BlitCharacter(80, 20, 's', 0xffffffff);
+        BlitCharacter(100, 20, 'T', 0xffffffff);
+
+        BlitText("Hello!! Hello I am tim!", 20, HEIGHT/2, 0xffffffff);
 
         InvalidateRect(window_handle, NULL, FALSE);
     }
