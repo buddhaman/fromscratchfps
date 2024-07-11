@@ -335,7 +335,17 @@ I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdli
         BlitCharacter(80, 20, 's', 0xffffffff);
         BlitCharacter(100, 20, 'T', 0xffffffff);
 
-        BlitText("Hello!! Hello I am tim!", 20, HEIGHT/2, 0xffffffff);
+        U8 r = 255;
+        U8 g = 0;
+        U8 b = 255;
+        U32 color = CreateColor(r, g, b, 255);
+        BlitText("Hello!! Hello I am tim!", 20, HEIGHT/2, color);
+
+        r = 0;
+        g = 255;
+        b = 255;
+        color = CreateColor(r, g, b, 255);
+        BlitText("Still tim", 180, HEIGHT/2+100, color);
 
         InvalidateRect(window_handle, NULL, FALSE);
     }
