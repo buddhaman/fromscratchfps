@@ -57,7 +57,8 @@ const I32 CHAR_HEIGHT = 16;
 // Function prototypes if needed.
 void DrawBuffer(HDC hdc);
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
+LRESULT CALLBACK 
+WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 {
     PAINTSTRUCT ps;
     HDC hdc;
@@ -77,12 +78,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
     return 0;
 }
 
-void ClearBuffer() 
+void 
+ClearBuffer() 
 {
     memset(pixel_buffer, 0, sizeof(pixel_buffer));
 }
 
-void SetPixelColor(I32 x, I32 y, U32 color) 
+void 
+SetPixelColor(I32 x, I32 y, U32 color) 
 {
     if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) 
     {
@@ -90,7 +93,8 @@ void SetPixelColor(I32 x, I32 y, U32 color)
     }
 }
 
-void DrawBuffer(HDC hdc) 
+void 
+DrawBuffer(HDC hdc) 
 {
     BITMAPINFO bmi;
     memset(&bmi, 0, sizeof(bmi));
@@ -105,7 +109,8 @@ void DrawBuffer(HDC hdc)
                   pixel_buffer, &bmi, DIB_RGB_COLORS, SRCCOPY);
 }
 
-void DrawLine(I32 x0, I32 y0, I32 x1, I32 y1, U32 color) 
+void 
+DrawLine(I32 x0, I32 y0, I32 x1, I32 y1, U32 color) 
 {
     I32 dx = abs(x1 - x0);
     I32 dy = abs(y1 - y0);
@@ -131,7 +136,8 @@ void DrawLine(I32 x0, I32 y0, I32 x1, I32 y1, U32 color)
     }
 }
 
-void FillBottomFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
+void 
+FillBottomFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
 {
     float invslope1 = (float)(x1 - x0) / (y1 - y0);
     float invslope2 = (float)(x2 - x0) / (y2 - y0);
@@ -147,7 +153,8 @@ void FillBottomFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 
     }
 }
 
-void FillTopFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
+void 
+FillTopFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
 {
     float invslope1 = (float)(x2 - x0) / (y2 - y0);
     float invslope2 = (float)(x2 - x1) / (y2 - y1);
@@ -163,7 +170,8 @@ void FillTopFlatTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 col
     }
 }
 
-void FillTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
+void 
+FillTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
 {
     // Sort vertices by y-coordinate ascending (y0 <= y1 <= y2)
     if (y0 > y1) { I32 tmp = y0; y0 = y1; y1 = tmp; tmp = x0; x0 = x1; x1 = tmp; }
@@ -190,7 +198,8 @@ void FillTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
     }
 }
 
-void TestTriangle(I32 x, I32 y, R32 angle, U32 color)
+void 
+TestTriangle(I32 x, I32 y, R32 angle, U32 color)
 {
     R32 l = 10;
     I32 x0 = x + (I32)(l * sinf(angle));
@@ -202,7 +211,8 @@ void TestTriangle(I32 x, I32 y, R32 angle, U32 color)
     FillTriangle(x0, y0, x1, y1, x2, y2, color);  
 }
 
-void BlitCharacter(I32 x, I32 y, char c, U32 color)
+void 
+BlitCharacter(I32 x, I32 y, char c, U32 color)
 {
     const I32 BYTES_PER_ROW = (CHAR_WIDTH + 7) / 8; 
 
@@ -223,7 +233,8 @@ void BlitCharacter(I32 x, I32 y, char c, U32 color)
     }
 }
 
-void BlitText(const char* text, I32 start_x, I32 start_y, U32 color)
+void 
+BlitText(const char* text, I32 start_x, I32 start_y, U32 color)
 {
     I32 x = start_x;
     I32 y = start_y;
@@ -250,7 +261,8 @@ void BlitText(const char* text, I32 start_x, I32 start_y, U32 color)
     }
 }
 
-I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmdshow) 
+I32 APIENTRY 
+WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmdshow) 
 {
     WNDCLASSEX wcex;
     HWND window_handle;
@@ -323,7 +335,7 @@ I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdli
 
 #if 1
         // Triangle stress test
-        for(I32 i = 0; i < 124; i++)
+        for(I32 i = 0; i < N_TRIANGLES; i++)
         {
             U32 color = RandomU32(0, UINT32_MAX);
             TestTriangle(x[i], y[i], i+t, c[i]);
