@@ -24,7 +24,6 @@ typedef double R64;
 
 #define ArraySize(array) (sizeof(arr) / sizeof(array[0]))
 
-
 inline R32 RandomR32(R32 min, R32 max) 
 {
     R32 scale = rand() / (R32) RAND_MAX; 
@@ -333,7 +332,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         // Clear buffer
         ClearBuffer();
 
-#if 1
+#if 0
         // Triangle stress test
         for(I32 i = 0; i < N_TRIANGLES; i++)
         {
@@ -358,6 +357,16 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         b = 255;
         color = CreateColor(r, g, b, 255);
         BlitText("Still tim", 180, HEIGHT/2+100, color);
+
+        r = 255;
+        g = 255;
+        b = 255;
+        color = CreateColor(r, g, b, 255);
+        BlitText("Helloooo I am tim and i am happpy to be here.", 20, 20, color);
+        BlitText("Hellooo i am happy to be here", 20, 40, color);
+        BlitText("Helloo i am happy", 20, 60, color);
+        BlitText("hlleoosdfj", 20, 80, color);
+        BlitText(":)", 20, 100, color);
 
         InvalidateRect(window_handle, NULL, FALSE);
     }
