@@ -19,7 +19,7 @@ CreateSocket(Server* server, I32 port)
     server->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(server->socket==INVALID_SOCKET)
     {
-        fprintf(stderr, "Error creating socket: %ld", WSAGetLastError());
+        fprintf(stderr, "Error creating socket: %ld\n", WSAGetLastError());
         WSACleanup();
         return 0;
     }
@@ -45,7 +45,7 @@ int StartListening(Server* server)
 {
     if(listen(server->socket, SOMAXCONN) == SOCKET_ERROR)
     {
-        fprintf(stderr, "Listening failed: %ld", WSAGetLastError());
+        fprintf(stderr, "Listening failed: %ld\n", WSAGetLastError());
         closesocket(server->socket);
         WSACleanup();
         return 0;
@@ -59,6 +59,8 @@ int StartListening(Server* server)
         WSACleanup();
         return 0;
     }
+
+    printf("Now starting to listen\n");
 
 #define SERVER_BUF_LEN 512
     char buf[SERVER_BUF_LEN];
@@ -90,6 +92,7 @@ void CloseServer(Server* server)
 Server* 
 CreateServer()
 {
+    printf("Starting server\n");
     Server* server;
     server = (Server*)calloc(1, sizeof(*server));
     I32 result = WSAStartup(MAKEWORD(2,2), &server->wsa_data);
@@ -98,5 +101,15 @@ CreateServer()
         fprintf(stderr, "WSAStartup failed: %d", result);
         return NULL;
     }
+
+    CreateSocket(server, 7070);
+
     return server;
+}
+
+int main(int argc, char** argv)
+{
+    Server* server = CreateServer();
+    StartListening(server);
+    return 0;
 }

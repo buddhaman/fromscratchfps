@@ -20,7 +20,15 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B 1
 )
 
+rem Server debug 
+cl ../src/server.c /Feserver_debug.exe /Zi /Od /DDEBUG /link user32.lib gdi32.lib Ws2_32.lib
+IF %ERRORLEVEL% NEQ 0 (
+    echo Debug build failed.
+    popd
+    EXIT /B 1
+)
+
 rem Run 
-fps_debug.exe
+rem fps_debug.exe
 
 popd
