@@ -1,48 +1,18 @@
+#define WIN32_LEAN_AND_MEAN 
+
 #include <windows.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define WIDTH 800
 #define HEIGHT 600
 
-#define true 1
-#define false 0
-
-typedef uint8_t U8;
-typedef uint16_t U16;
-typedef uint32_t U32;
-typedef uint64_t U64;
-
-typedef int8_t I8;
-typedef int16_t I16;
-typedef int32_t I32;
-typedef int64_t I64;
-
-typedef float R32;
-typedef double R64;
-
-#define ArraySize(array) (sizeof(arr) / sizeof(array[0]))
-
-inline R32 RandomR32(R32 min, R32 max) 
-{
-    R32 scale = rand() / (R32) RAND_MAX; 
-    return min + scale * (max - min); 
-}
-
-inline U32 RandomU32(U32 min, U32 max) 
-{
-    return (rand() % (max-min)) + min;
-}
-
-inline U32 CreateColor(U8 r, U8 g, U8 b, U8 a) 
-{
-    return ((U32)a << 24) | ((U32)r << 16) | ((U32)g << 8) | (U32)b;
-}
-
 // My files
-
+#include "util.h"
 #include "letters.h"
+#include "network.h"
 
 // Global variables
 HINSTANCE app_instance;
@@ -332,15 +302,16 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         // Clear buffer
         ClearBuffer();
 
-#if 0
+#if 1
         // Triangle stress test
-        for(I32 i = 0; i < N_TRIANGLES; i++)
+        for(I32 i = 0; i < 12; i++)
         {
             U32 color = RandomU32(0, UINT32_MAX);
             TestTriangle(x[i], y[i], i+t, c[i]);
         }
 #endif
 
+        BlitCharacter(0, 0, 'X', 0xffffffff);
         BlitCharacter(20, 20, 'X', 0xffffffff);
         BlitCharacter(60, 20, 'A', 0xffffffff);
         BlitCharacter(80, 20, 's', 0xffffffff);
