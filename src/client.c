@@ -1,6 +1,9 @@
+#define WIN32_LEAN_AND_MEAN 
+
 #include <windows.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define WIDTH 800
@@ -43,6 +46,7 @@ inline U32 CreateColor(U8 r, U8 g, U8 b, U8 a)
 // My files
 
 #include "letters.h"
+#include "network.h"
 
 // Global variables
 HINSTANCE app_instance;
@@ -320,15 +324,16 @@ I32 APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdli
         // Clear buffer
         ClearBuffer();
 
-#if 0
+#if 1
         // Triangle stress test
-        for(I32 i = 0; i < N_TRIANGLES; i++)
+        for(I32 i = 0; i < 12; i++)
         {
             U32 color = RandomU32(0, UINT32_MAX);
             TestTriangle(x[i], y[i], i+t, c[i]);
         }
 #endif
 
+        BlitCharacter(0, 0, 'X', 0xffffffff);
         BlitCharacter(20, 20, 'X', 0xffffffff);
         BlitCharacter(60, 20, 'A', 0xffffffff);
         BlitCharacter(80, 20, 's', 0xffffffff);
