@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1280
+#define HEIGHT 720
 
 // My files
 #include "util.h"
@@ -170,7 +170,7 @@ FillTriangle(I32 x0, I32 y0, I32 x1, I32 y1, I32 x2, I32 y2, U32 color)
 void 
 TestTriangle(I32 x, I32 y, R32 angle, U32 color)
 {
-    R32 l = 10;
+    R32 l = 20;
     I32 x0 = x + (I32)(l * sinf(angle));
     I32 y0 = y + (I32)(l * cosf(angle));
     I32 x1 = x + (I32)(l * sinf(angle + 2.0f * 3.14f / 3.0f));
@@ -304,7 +304,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
 
 #if 1
         // Triangle stress test
-        for(I32 i = 0; i < 12; i++)
+        for(I32 i = 0; i < 200; i++)
         {
             U32 color = RandomU32(0, UINT32_MAX);
             TestTriangle(x[i], y[i], i+t, c[i]);
