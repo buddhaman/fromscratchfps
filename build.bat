@@ -29,6 +29,6 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 rem Run 
-rem fps_debug.exe
+fps_debug.exe
 
 popd

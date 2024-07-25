@@ -1,19 +1,10 @@
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
-#pragma comment(lib, "Ws2_32.lib")
 
 #include "util.h"
+#include "network.h"
 
-typedef struct Server Server;
-struct Server
-{
-    WSADATA wsa_data;
-    SOCKET socket;
-};
-
-int 
+B8
 CreateSocket(Server* server, I32 port)
 {
     server->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -21,7 +12,7 @@ CreateSocket(Server* server, I32 port)
     {
         fprintf(stderr, "Error creating socket: %ld\n", WSAGetLastError());
         WSACleanup();
-        return 0;
+        return false;
     }
 
     struct sockaddr_in server_addr;   
@@ -35,10 +26,10 @@ CreateSocket(Server* server, I32 port)
         fprintf(stderr, "Bind failed: %ld\n", WSAGetLastError());
         closesocket(server->socket);
         WSACleanup();
-        return 0;
+        return false;
     }
     
-    return 1;
+    return true;
 }
 
 int StartListening(Server* server)
@@ -48,8 +39,10 @@ int StartListening(Server* server)
         fprintf(stderr, "Listening failed: %ld\n", WSAGetLastError());
         closesocket(server->socket);
         WSACleanup();
-        return 0;
+        return false;
     }
+
+    printf("Now starting to listen, please connect.\n");
 
     SOCKET client_socket = accept(server->socket, NULL, NULL);
     if(client_socket == INVALID_SOCKET)
@@ -57,10 +50,10 @@ int StartListening(Server* server)
         fprintf(stderr, "Accept failed: %ld\n", WSAGetLastError());
         closesocket(client_socket);
         WSACleanup();
-        return 0;
+        return false;
     }
 
-    printf("Now starting to listen\n");
+    return true;
 
 #define SERVER_BUF_LEN 512
     char buf[SERVER_BUF_LEN];
@@ -81,6 +74,7 @@ int StartListening(Server* server)
     }
 
     closesocket(client_socket);
+    return 0;
 }
 
 void CloseServer(Server* server)
