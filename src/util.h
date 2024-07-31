@@ -1,3 +1,6 @@
+#ifndef UTIL_H
+#define UTIL_H
+
 #include <stdint.h>
 
 #define true 1
@@ -20,18 +23,20 @@ typedef double R64;
 
 #define ArraySize(array) (sizeof(arr) / sizeof(array[0]))
 
-inline R32 RandomR32(R32 min, R32 max) 
+static inline R32 RandomR32(R32 min, R32 max) 
 {
     R32 scale = rand() / (R32) RAND_MAX; 
     return min + scale * (max - min); 
 }
 
-inline U32 RandomU32(U32 min, U32 max) 
+static inline U32 RandomU32(U32 min, U32 max) 
 {
     return (rand() % (max-min)) + min;
 }
 
-inline U32 CreateColor(U8 r, U8 g, U8 b, U8 a) 
+static inline U32 CreateColor(U8 r, U8 g, U8 b, U8 a) 
 {
     return ((U32)a << 24) | ((U32)r << 16) | ((U32)g << 8) | (U32)b;
 }
+
+#endif

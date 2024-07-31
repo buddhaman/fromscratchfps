@@ -1,10 +1,17 @@
 #define WIN32_LEAN_AND_MEAN 
 
-#include <windows.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+// Yo wtf windows.h ... 
+#undef far
+#undef near
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -257,8 +264,6 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
     wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
     printf("Now starting application \n");
-
-    printf("NOw starting application \n");
 
     RegisterClassEx(&wcex);
 
