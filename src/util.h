@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <math.h>
 
 #define true 1
@@ -24,6 +25,8 @@ typedef U8 B8;
 
 typedef float R32;
 typedef double R64;
+
+#define R32_MAX FLT_MAX
 
 #define ArraySize(array) (sizeof(arr) / sizeof(array[0]))
 
