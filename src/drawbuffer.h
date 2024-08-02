@@ -6,6 +6,9 @@ struct DrawBuffer
     I32 width;
     I32 height;
     U32* pixels;
+
+    // This is optional
+    R32* depth;
 };
 
 DrawBuffer* 
