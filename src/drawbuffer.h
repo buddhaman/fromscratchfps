@@ -49,8 +49,12 @@ SetPixelColorDepth(DrawBuffer* buffer, I32 x, I32 y, U32 color, R32 depth)
 {
     if (x >= 0 && x < buffer->width && y >= 0 && y < buffer->height) 
     {
-        buffer->pixels[y * buffer->width + x] = color;
-        buffer->depth[y * buffer->width + x] = depth;
+        I32 index = y * buffer->width + x;
+        if(depth < buffer->depth[index])
+        {
+            buffer->pixels[index] = color;
+            buffer->depth[index] = depth;
+        }
     }
 }
 
