@@ -64,7 +64,7 @@ static M4 MatrixIdentity()
 {
     M4 matrix = 
     {
-        .m = {
+        {
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
@@ -100,6 +100,36 @@ static M4 MatrixPerspective(float fov, float aspectRatio, float near, float far)
     matrix.m[3][3] = 0;
 
     return matrix;
+}
+
+static M4 MatrixLookAt(V3 eye, V3 center, V3 up)
+{
+    V3 f = V3Normalize(V3Subtract(center, eye));
+    V3 s = V3Normalize(V3Cross(f, up));
+    V3 u = V3Cross(s, f);
+
+    M4 result = {0};
+    result.m[0][0] = s.x;
+    result.m[0][1] = u.x;
+    result.m[0][2] = -f.x;
+    result.m[0][3] = 0.0f;
+
+    result.m[1][0] = s.y;
+    result.m[1][1] = u.y;
+    result.m[1][2] = -f.y;
+    result.m[1][3] = 0.0f;
+
+    result.m[2][0] = s.z;
+    result.m[2][1] = u.z;
+    result.m[2][2] = -f.z;
+    result.m[2][3] = 0.0f;
+
+    result.m[3][0] = -V3Dot(s, eye);
+    result.m[3][1] = -V3Dot(u, eye);
+    result.m[3][2] = V3Dot(f, eye);
+    result.m[3][3] = 1.0f;
+
+    return result;
 }
 
 V3 TransformPoint(const V3* point, const M4* matrix) 

@@ -28,7 +28,7 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B 1
 )
 
-rem Run 
+REM Run 
 fps_debug.exe
 
 popd

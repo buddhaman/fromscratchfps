@@ -2,6 +2,10 @@
 #define UTIL_H
 
 #include <stdint.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 #define true 1
 #define false 0
