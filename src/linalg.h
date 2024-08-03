@@ -102,7 +102,8 @@ static M4 MatrixPerspective(float fov, float aspectRatio, float near, float far)
     return matrix;
 }
 
-static M4 MatrixLookAt(V3 eye, V3 center, V3 up)
+static M4 
+MatrixLookAt(V3 eye, V3 center, V3 up)
 {
     V3 f = V3Normalize(V3Subtract(center, eye));
     V3 s = V3Normalize(V3Cross(f, up));
@@ -132,7 +133,21 @@ static M4 MatrixLookAt(V3 eye, V3 center, V3 up)
     return result;
 }
 
-V3 TransformPoint(const V3* point, const M4* matrix) 
+static inline M4 
+MatMul(M4 a, M4 b)
+{
+    M4 result;
+    for(I32 j = 0; j < 4; j++)
+    for(I32 i = 0; i < 4; i++)
+    {
+        result.m[i][j]  = a.m[i][0]*b.m[0][j] + a.m[i][1]*b.m[1][j] 
+                        + a.m[i][2]*b.m[2][j] + a.m[i][3]*b.m[3][j];
+    }
+    return result;
+}
+
+static V3 
+TransformPoint(const V3* point, const M4* matrix) 
 {
     V3 result;
     result.x = point->x * matrix->m[0][0] + point->y * matrix->m[0][1] + point->z * matrix->m[0][2] + matrix->m[0][3];
