@@ -30,6 +30,15 @@ const I32 CHAR_HEIGHT = 16;
 // Function prototypes if needed.
 void DrawToBackBuffer(HDC hdc, DrawBuffer* buffer);
 
+typedef struct Camera Camera;
+struct Camera
+{
+    R32 phi;
+    R32 theta;
+    R32 radius;
+};
+static Camera camera;
+
 LRESULT CALLBACK 
 WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 {
@@ -37,6 +46,17 @@ WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
     HDC hdc;
 
     switch (message) {
+    case WM_KEYDOWN:
+        R32 speed = 0.01f;
+        R32 zoom = 1.01f;
+    switch (wparam) {
+        case 'W': camera.phi -= speed; break;
+        case 'S': camera.phi += speed; break;
+        case 'A': camera.theta -= speed; break;
+        case 'D': camera.theta += speed; break;
+        case 'X': camera.radius *= zoom; break;
+        case 'Z': camera.radius /= zoom; break;
+    }
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
         DrawToBackBuffer(hdc, main_buffer);
@@ -130,6 +150,59 @@ BlitText(DrawBuffer* buffer, const char* text, I32 start_x, I32 start_y, U32 col
     }
 }
 
+void 
+DrawGizmo(DrawBuffer* buffer, M4 transform, R32 width) {
+    // Define vertices for the rectangles with the given width
+    V3 xRect[4] = {
+        {0.0f, width, width},
+        {1.0f, width, width},
+        {1.0f, -width, -width},
+        {0.0f, -width, -width}
+    };
+
+    V3 yRect[4] = {
+        {width, 0.0f, width},
+        {width, 1.0f, width},
+        {-width, 1.0f, -width},
+        {-width, 0.0f, -width}
+    };
+
+    V3 zRect[4] = {
+        {width, width, 0.0f},
+        {width, width, 1.0f},
+        {-width, -width, 1.0f},
+        {-width, -width, 0.0f}
+    };
+
+    // Transform vertices
+    for (int i = 0; i < 4; i++) {
+        xRect[i] = TransformV3(&transform, xRect[i]);
+        yRect[i] = TransformV3(&transform, yRect[i]);
+        zRect[i] = TransformV3(&transform, zRect[i]);
+
+        xRect[i] = TransformToScreenSpace(xRect[i], WIDTH, HEIGHT);
+        yRect[i] = TransformToScreenSpace(yRect[i], WIDTH, HEIGHT);
+        zRect[i] = TransformToScreenSpace(zRect[i], WIDTH, HEIGHT);
+    }
+
+    // Colors
+    U32 red = 0xFF0000FF;   // Red
+    U32 green = 0xFF00FF00; // Green
+    U32 blue = 0xFFFF0000;  // Blue
+
+    // Draw X axis rectangle (red)
+    FillTriangleDepth(buffer, (I32)xRect[0].x, (I32)xRect[0].y, xRect[0].z, (I32)xRect[1].x, (I32)xRect[1].y, xRect[1].z, (I32)xRect[2].x, (I32)xRect[2].y, xRect[2].z, red);
+    FillTriangleDepth(buffer, (I32)xRect[0].x, (I32)xRect[0].y, xRect[0].z, (I32)xRect[2].x, (I32)xRect[2].y, xRect[2].z, (I32)xRect[3].x, (I32)xRect[3].y, xRect[3].z, red);
+
+    // Draw Y axis rectangle (green)
+    FillTriangleDepth(buffer, (I32)yRect[0].x, (I32)yRect[0].y, yRect[0].z, (I32)yRect[1].x, (I32)yRect[1].y, yRect[1].z, (I32)yRect[2].x, (I32)yRect[2].y, yRect[2].z, green);
+    FillTriangleDepth(buffer, (I32)yRect[0].x, (I32)yRect[0].y, yRect[0].z, (I32)yRect[2].x, (I32)yRect[2].y, yRect[2].z, (I32)yRect[3].x, (I32)yRect[3].y, yRect[3].z, green);
+
+    // Draw Z axis rectangle (blue)
+    FillTriangleDepth(buffer, (I32)zRect[0].x, (I32)zRect[0].y, zRect[0].z, (I32)zRect[1].x, (I32)zRect[1].y, zRect[1].z, (I32)zRect[2].x, (I32)zRect[2].y, zRect[2].z, blue);
+    FillTriangleDepth(buffer, (I32)zRect[0].x, (I32)zRect[0].y, zRect[0].z, (I32)zRect[2].x, (I32)zRect[2].y, zRect[2].z, (I32)zRect[3].x, (I32)zRect[3].y, zRect[3].z, blue);
+}
+
 I32 APIENTRY 
 WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmdshow) 
 {
@@ -192,7 +265,9 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         U32 color = CreateColor(r, g, b, 255);
         c[i] = color;
     }
-    
+
+    camera.radius = 4.0f;
+    camera.phi = 3.14f/4.0f;
     
     R32 t = 0;
     while (GetMessage(&msg, NULL, 0, 0)) 
@@ -201,28 +276,34 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         DispatchMessage(&msg);
         t += 0.01f;
 
+        V3 eye;
+        eye.x = camera.radius * sinf(camera.phi) * cosf(camera.theta);
+        eye.y = camera.radius * sinf(camera.phi) * sinf(camera.theta);
+        eye.z = camera.radius * cosf(camera.phi);
+
+        printf("%f %f %f\n" , eye.x, eye.y, eye.z);
+
         // Clear buffer
         ClearBuffer(buffer);
 
         // Camera setup
-        V3 eye = {-4.0f, 0.0f, 0.0f};   // Camera position
         V3 center = {0.0f, 0.0f, 0.0f}; // Look at point
         V3 up = {0.0f, 0.0f, 1.0f};    // Up direction
         M4 view = MatrixLookAt(eye, center, up);
 
         // Perspective matrix
-        M4 perspective = MatrixPerspective(1.0f, WIDTH, HEIGHT, 0.1f, 300.0f);
+        M4 perspective = MatrixPerspective(1.3f, WIDTH, HEIGHT, 0.1f, 300.0f);
 
         // Draw a test 3D triangle
-        V3 v0 = {-0.5f, 1.5f, 0.0f}; // bottom left
+        V3 v0 = {-0.5f, 0.5f, 0.0f}; // bottom left
         V3 v1 = {0.5f, -0.14f, 0.0f};  // bottom right
-        V3 v2 = {0.0f, 0.0f, 1.0f};   // top center
+        V3 v2 = {0.0f, 0.0f, 2.0f+sinf(t)};   // top center
 
         // Combine transformations
         M4 transform = MatMul(perspective, view);
 
         // Transform
-#if 0
+#if 1
         v0 = TransformV3(&transform, v0);
         v1 = TransformV3(&transform, v1);
         v2 = TransformV3(&transform, v2);
@@ -232,9 +313,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         v1 = TransformToScreenSpace(v1, WIDTH, HEIGHT);
         v2 = TransformToScreenSpace(v2, WIDTH, HEIGHT);
 
-        U32 triangle_color = 0xffffffff;
-        FillTriangleDepth(buffer, (I32)v0.x, (I32)v0.y, v0.z, (I32)v1.x, (I32)v1.y, v1.z, (I32)v2.x, (I32)v2.y, v2.z, triangle_color);
-
+        DrawGizmo(buffer, transform, 0.22f); 
 #if 0
         // Triangle stress test
         for(I32 i = 0; i < 200; i++)

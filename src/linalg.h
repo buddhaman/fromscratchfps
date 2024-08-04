@@ -129,7 +129,7 @@ static inline V3
 TransformToScreenSpace(V3 v, R32 width, R32 height) {
     V3 result;
     result.x = (v.x * width / 2.0f) + width / 2.0f;
-    result.y = (-v.y * height / 2.0f) + height / 2.0f;
+    result.y = (v.y * height / 2.0f) + height / 2.0f;
     result.z = v.z;
     return result;
 }
