@@ -44,6 +44,12 @@ SetPixelColor(DrawBuffer* buffer, I32 x, I32 y, U32 color)
     }
 }
 
+static inline B8 
+InRange(DrawBuffer* buffer, I32 x, I32 y)
+{
+    return (x >= 0 && x < buffer->width && y >= 0 && y < buffer->height);
+}
+
 inline static void 
 SetPixelColorDepth(DrawBuffer* buffer, I32 x, I32 y, U32 color, R32 depth)
 {

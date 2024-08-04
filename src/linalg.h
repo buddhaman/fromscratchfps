@@ -99,28 +99,14 @@ MatrixPerspective(R32 fov, R32 width, R32 height, R32 near, R32 far)
 {
     R32 aspectRatio = width / height;
     R32 tan_half_fov = tanf(fov / 2.0f);
-    M4 matrix;
+    M4 matrix = {0};
 
     // Perspective projection matrix
-    matrix.m[0][0] = 1 / (aspectRatio * tan_half_fov);
-    matrix.m[0][1] = 0;
-    matrix.m[0][2] = 0;
-    matrix.m[0][3] = 0;
-
-    matrix.m[1][0] = 0;
-    matrix.m[1][1] = 1 / tan_half_fov;
-    matrix.m[1][2] = 0;
-    matrix.m[1][3] = 0;
-
-    matrix.m[2][0] = 0;
-    matrix.m[2][1] = 0;
+    matrix.m[0][0] = 1.0f / (aspectRatio * tan_half_fov);
+    matrix.m[1][1] = 1.0f / tan_half_fov;
     matrix.m[2][2] = -(far + near) / (far - near);
-    matrix.m[2][3] = -(2 * far * near) / (far - near);
-
-    matrix.m[3][0] = 0;
-    matrix.m[3][1] = 0;
-    matrix.m[3][2] = -1;
-    matrix.m[3][3] = 0;
+    matrix.m[2][3] = -1.0f;
+    matrix.m[3][2] = -(2.0f * far * near) / (far - near);
 
     return matrix;
 }
@@ -169,18 +155,16 @@ static V3
 TransformV3(M4* transform, V3 v) 
 {
     V3 result;
-    float w = v.x * transform->m[3][0] + v.y * transform->m[3][1] + v.z * transform->m[3][2] + transform->m[3][3];
-    result.x = (v.x * transform->m[0][0] + v.y * transform->m[0][1] + v.z * transform->m[0][2] + transform->m[0][3]);
-    result.y = (v.x * transform->m[1][0] + v.y * transform->m[1][1] + v.z * transform->m[1][2] + transform->m[1][3]);
-    result.z = (v.x * transform->m[2][0] + v.y * transform->m[2][1] + v.z * transform->m[2][2] + transform->m[2][3]);
+    R32 w = v.x * transform->m[0][3] + v.y * transform->m[1][3] + v.z * transform->m[2][3] + transform->m[3][3];
+    result.x = (v.x * transform->m[0][0] + v.y * transform->m[1][0] + v.z * transform->m[2][0] + transform->m[3][0]);
+    result.y = (v.x * transform->m[0][1] + v.y * transform->m[1][1] + v.z * transform->m[2][1] + transform->m[3][1]);
+    result.z = (v.x * transform->m[0][2] + v.y * transform->m[1][2] + v.z * transform->m[2][2] + transform->m[3][2]);
+    if(w != 0.0f)
+    {
+        result.x /= w;
+        result.y /= w;
+        result.z /= w;
+    }
 
-    if( w == 0.0f || w == 1.0f)
-        return result;
-
-    result.x /= w;
-    result.y /= w;
-    result.z /= w;
-    
     return result;
 }
-

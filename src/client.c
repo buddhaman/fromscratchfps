@@ -266,7 +266,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         c[i] = color;
     }
 
-    camera.radius = 4.0f;
+    camera.radius = 14.0f;
     camera.phi = 3.14f/4.0f;
     
     R32 t = 0;
@@ -292,7 +292,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         M4 view = MatrixLookAt(eye, center, up);
 
         // Perspective matrix
-        M4 perspective = MatrixPerspective(1.3f, WIDTH, HEIGHT, 0.1f, 300.0f);
+        M4 perspective = MatrixPerspective(1.2f, WIDTH, HEIGHT, 1.0f, 10.0f);
 
         // Draw a test 3D triangle
         V3 v0 = {-0.5f, 0.5f, 0.0f}; // bottom left
@@ -313,7 +313,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         v1 = TransformToScreenSpace(v1, WIDTH, HEIGHT);
         v2 = TransformToScreenSpace(v2, WIDTH, HEIGHT);
 
-        DrawGizmo(buffer, transform, 0.22f); 
+        DrawGizmo(buffer, transform, 0.1f); 
 #if 0
         // Triangle stress test
         for(I32 i = 0; i < 200; i++)
