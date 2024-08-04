@@ -67,16 +67,19 @@ union M4
 static inline M4 
 MatMul(M4 a, M4 b)
 {
-    M4 result;
-    for(I32 j = 0; j < 4; j++)
-    for(I32 i = 0; i < 4; i++)
+    M4 result = {0};
+    for (int i = 0; i < 4; i++)
     {
-        result.m[i][j]  = a.m[i][0]*b.m[0][j] + a.m[i][1]*b.m[1][j] 
-                        + a.m[i][2]*b.m[2][j] + a.m[i][3]*b.m[3][j];
+        for (int j = 0; j < 4; j++)
+        {
+            result.m[i][j] = a.m[i][0] * b.m[0][j] + 
+                             a.m[i][1] * b.m[1][j] + 
+                             a.m[i][2] * b.m[2][j] + 
+                             a.m[i][3] * b.m[3][j];
+        }
     }
     return result;
 }
-
 
 static inline M4 
 MatrixIdentity() 

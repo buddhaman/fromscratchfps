@@ -214,17 +214,19 @@ WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, I32 ncmds
         M4 perspective = MatrixPerspective(1.0f, WIDTH, HEIGHT, 0.1f, 300.0f);
 
         // Draw a test 3D triangle
-        V3 v0 = {0.0f, 1.5f, 0.0f}; // bottom left
-        V3 v1 = {0.0f, 1.5f, 1.0f};  // bottom right
+        V3 v0 = {-0.5f, 1.5f, 0.0f}; // bottom left
+        V3 v1 = {0.5f, -0.14f, 0.0f};  // bottom right
         V3 v2 = {0.0f, 0.0f, 1.0f};   // top center
 
         // Combine transformations
         M4 transform = MatMul(perspective, view);
 
         // Transform
+#if 0
         v0 = TransformV3(&transform, v0);
         v1 = TransformV3(&transform, v1);
         v2 = TransformV3(&transform, v2);
+#endif
 
         v0 = TransformToScreenSpace(v0, WIDTH, HEIGHT);
         v1 = TransformToScreenSpace(v1, WIDTH, HEIGHT);
